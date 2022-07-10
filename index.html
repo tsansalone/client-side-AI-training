@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <title>Client-side Neural Network Training</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+        <link rel="stylesheet" href="https://meyerweb.com/eric/tools/css/reset/reset.css" />
+        <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+        <link href="css/navbar.css" rel="stylesheet">
+        <link href="css/content.css" rel="stylesheet">
+        <py-env>
+            - pandas
+            - numpy
+            - matplotlib
+            - paths:
+            - ./functions.py
+        </py-env>
+    </head>
+
+    <body>
+        <header>
+            <div class="inner-wrap">
+                <div class="brand">
+                    <h1>
+                        Client-side Neural Network Training
+                    </h1>
+                </div>
+
+                <nav>
+                    <a href="https://github.com/tsansalone/pyscriptAIdemo">GitHub</a>
+                    <a href="https://youtu.be/xpPX3fBM9dU">Algorithm by Python Simplified</a>
+                    <a href="https://pyscript.net/">PyScript</a>
+                </nav>
+                <div class="menu-toggle">
+                    <svg class="menu-open" aria-hidden="true" focusable="false" role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path fill="currentColor"
+                            d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z">
+                        </path>
+                    </svg>
+
+                    <svg class="menu-close" aria-hidden="true" focusable="false" role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                            d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="col1">
+                <form class="parameters">
+                    <div class="parameter-input">
+                        <label for="bias">Bias</label>
+                        <input class="py-input" type="number" id="bias" name="bias" min="0" max="1" step="0.01" value="0.1">
+                    </div>
+                    <div class="parameter-input">
+                        <label for="epoch">Epochs</label>
+                        <input class="py-input" type="number" id="epoch" name="epoch" min="2" max="75" value="30">
+                    </div>
+                    <div class="parameter-input">
+                        <label for="l_rate">L_Rate</label>
+                        <input class="py-input" type="number" id="l_rate" name="l_rate" min="0.001" max="0.1" step="0.001"
+                            value="0.01">
+                    </div>
+                    <div class="parameter-input">
+                        <label for="features">Features</label>
+                        <input class="py-input" type="number" id="features" name="features" min="10" max="75" value="30">
+                    </div>
+                    <div class="parameter-input">
+                        <label for="values">Values</label>
+                        <input class="py-input" type="number" id="values" name="values" min="1" max="30" value="3">
+                    </div>
+                    <div class="submit-parameter">
+                        <button class="py-button  submit-button" type="button" id="button">Run</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col8">
+                <div id="plot">
+                </div>
+                <div id="dataframe" class="table">
+                </div>
+            </div>
+
+        </main>
+        <py-script>
+            import matplotlib
+            import pandas as pd
+            import numpy as np
+            from js import document, DOMParser, setTimeout
+            from functions import generate_data, train_model
+            from time import sleep
+
+
+            def evt(e=None):
+            while (document.getElementById('dataframe').children.length > 0):
+            document.getElementById('dataframe').children[0].remove()
+
+            run_training_model()
+            if e:
+            e.preventDefault()
+            return False
+
+            def run_training_model():
+
+            features = document.getElementById('features').value
+            values = document.getElementById('values').value
+            bias = document.getElementById('bias').value
+            epochs = document.getElementById('epoch').value
+            l_rate = document.getElementById('l_rate').value
+
+            data, weights = generate_data(features,values)
+            epoch_loss = train_model(data, weights, bias, l_rate, epochs)
+
+            df = pd.DataFrame(epoch_loss, columns=['Average Loss'])
+            img = df.plot(xlabel="Epoch", ylabel="Average Loss", kind='line', grid=True, figsize=(10,5), title='Feel free to
+            readjust the parameters and test again').get_figure()
+
+            pyscript.write('plot', img)
+            pyscript.write('dataframe', df)
+
+
+            submit = document.getElementById('button')
+            submit.onclick = evt
+
+        </py-script>
+        <script type="text/javascript" src="menu-toggle.js"></script>
+    </body>
+
+</html>
