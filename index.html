@@ -16,7 +16,7 @@
             - numpy
             - matplotlib
             - paths:
-            - ./functions.py
+                - ./functions.py
         </py-env>
     </head>
 
@@ -30,7 +30,7 @@
                 </div>
 
                 <nav>
-                    <a href="https://github.com/tsansalone/pyscriptAIdemo">GitHub</a>
+                    <a href="https://github.com/tsansalone/client-side-AI-training">GitHub</a>
                     <a href="https://youtu.be/xpPX3fBM9dU">Algorithm by Python Simplified</a>
                     <a href="https://pyscript.net/">PyScript</a>
                 </nav>
@@ -77,7 +77,7 @@
                         <input class="py-input" type="number" id="values" name="values" min="1" max="30" value="3">
                     </div>
                     <div class="submit-parameter">
-                        <button class="py-button  submit-button" type="button" id="button">Run</button>
+                        <button class="py-button  submit-button" type="button" id="button" pys-onClick="evt">Run</button>
                     </div>
                 </form>
             </div>
@@ -99,36 +99,35 @@
             from time import sleep
 
 
-            def evt(e=None):
-            while (document.getElementById('dataframe').children.length > 0):
-            document.getElementById('dataframe').children[0].remove()
+            def evt(e):
+                while (document.getElementById('dataframe').children.length > 0):
+                    document.getElementById('dataframe').children[0].remove()
 
-            run_training_model()
-            if e:
-            e.preventDefault()
-            return False
+                run_training_model()
+                if e:
+                    e.preventDefault()
+                return False
 
             def run_training_model():
 
-            features = document.getElementById('features').value
-            values = document.getElementById('values').value
-            bias = document.getElementById('bias').value
-            epochs = document.getElementById('epoch').value
-            l_rate = document.getElementById('l_rate').value
+                features = document.getElementById('features').value
+                values = document.getElementById('values').value
+                bias = document.getElementById('bias').value
+                epochs = document.getElementById('epoch').value
+                l_rate = document.getElementById('l_rate').value
 
-            data, weights = generate_data(features,values)
-            epoch_loss = train_model(data, weights, bias, l_rate, epochs)
+                data, weights = generate_data(features,values)
+                epoch_loss = train_model(data, weights, bias, l_rate, epochs)
 
-            df = pd.DataFrame(epoch_loss, columns=['Average Loss'])
-            img = df.plot(xlabel="Epoch", ylabel="Average Loss", kind='line', grid=True, figsize=(10,5), title='Feel free to
-            readjust the parameters and test again').get_figure()
+                df = pd.DataFrame(epoch_loss, columns=['Average Loss'])
+                img = df.plot(xlabel="Epoch", ylabel="Average Loss", kind="line", grid=True, figsize=(10,5), title="Feel free to readjust the parameters and test again").get_figure()
 
-            pyscript.write('plot', img)
-            pyscript.write('dataframe', df)
+                pyscript.write('plot', img)
+                pyscript.write('dataframe', df)
 
 
-            submit = document.getElementById('button')
-            submit.onclick = evt
+                submit = document.getElementById('button')
+                submit.onclick = evt
 
         </py-script>
         <script type="text/javascript" src="menu-toggle.js"></script>
